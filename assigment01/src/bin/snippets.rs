@@ -1,5 +1,6 @@
 use assigment01::external_command::show_sysinfo;
 use assigment01::quicksort::quicksort;
+use assigment01::{download_file, parse_xml};
 
 fn main() {
     println!("----- Running quicksort examples -----\n");
@@ -8,6 +9,11 @@ fn main() {
 
     println!("----- Running external command example -----\n");
     show_sysinfo();
+    println!();
+
+    println!("----- Running XML parsing example -----\n");
+    let file = download_file("https://www.w3schools.com/xml/books.xml", "books.xml");
+    parse_xml(file.unwrap());
 }
 
 fn run_quicksort_examples() {
