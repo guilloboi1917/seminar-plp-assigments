@@ -1,28 +1,40 @@
-use std::string;
-
+use assigment01::external_command::show_sysinfo;
 use assigment01::quicksort::quicksort;
 
 fn main() {
-    // Some quicksort tests
+    println!("----- Running quicksort examples -----\n");
+    run_quicksort_examples();
+    println!();
 
+    println!("----- Running external command example -----\n");
+    show_sysinfo();
+}
+
+fn run_quicksort_examples() {
     // integer array
     let mut integer_input_array = [11, 4, 7, 6, 10, 100, 20];
     let mut hi = integer_input_array.len() - 1;
+
+    println!("Sorting integer input array {:?}", integer_input_array);
     quicksort(&mut integer_input_array, 0, hi);
 
-    println!("{:?}", integer_input_array);
+    println!("{:?}\n", integer_input_array);
 
     // str array
     let mut string_input_array = ["abc", "aaa", "k", "aba", "xyz", "cool"];
     hi = string_input_array.len() - 1;
+
+    println!("Sorting string input array {:?}", string_input_array);
     quicksort(&mut string_input_array, 0, hi);
 
-    println!("{:?}", string_input_array);
+    println!("{:?}\n", string_input_array);
 
-    // str array
+    // float array
     let mut float_input_array = [0.2, 1.1, 3.3, 10.0];
     hi = float_input_array.len() - 1;
+
+    println!("Sorting float input array {:?}", float_input_array);
     quicksort(&mut float_input_array, 0, hi);
 
-    println!("{:?}", float_input_array);
+    println!("{:?}\n", float_input_array);
 }
