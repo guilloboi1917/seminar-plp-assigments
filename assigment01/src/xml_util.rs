@@ -1,8 +1,8 @@
-use reqwest;
+use reqwest::{self, blocking::Client};
 use std::{
     env,
     fs::File,
-    io::{self, Write},
+    io::{self, copy},
 };
 use xml::reader::{EventReader, XmlEvent};
 
@@ -10,23 +10,35 @@ pub fn download_file(url: &str, file_name: &str) -> Result<File, std::io::Error>
     // We want to store the file in the temp directory
     let tmp_dir = env::temp_dir();
     let file_path = tmp_dir.join(file_name);
+    println!("Downloading from: {}", url);
     println!("Downloading file to: {:?}\n", file_path);
 
+    // Create a new client to handle the download
+    // Using blocking::Client as async is not needed for this small example
+    let client = Client::new();
+
     // Download the file and handle the error
-    let response = reqwest::blocking::get(url)
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+    let mut response = client
+        .get(url)
+        .send()
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("Request error: {}", e)))?;
 
-    // Get file content and handle error
-    let content = response
-        .bytes()
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+    if !response.status().is_success() {
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            format!("HTTP error: {}", response.status()),
+        ));
+    }
 
+    // Create new file for storing response data
     let mut file = File::create(&file_path)?;
-    file.write_all(&content)?;
+    let _ = copy(&mut response, &mut file);
 
-    // We already open the file before reading it
+    // Make sure changes persist on disk
+    file.sync_all()?;
+
+    // Return the openend file for later use (maybe not the best way)
     let downloaded_file = File::open(&file_path)?;
-
     Ok(downloaded_file)
 }
 
@@ -82,5 +94,7 @@ pub fn parse_xml(xml_file: File) {
         }
     }
 
-    println!("XML parsing finished!\nSummary of results:\n - number of books: {num_books}\n - total price of books: {total_price}");
+    println!(
+        "XML parsing finished!\nSummary of results:\n - number of books: {num_books}\n - total price of books: {total_price}\n"
+    );
 }

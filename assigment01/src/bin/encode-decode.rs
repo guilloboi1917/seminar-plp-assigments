@@ -6,11 +6,10 @@ const MAX_ROT: i32 = 26; // exclusive
 
 fn main() {
     let input_string = "abcde".to_string();
-    let offset = -1;
+    let offset = -5;
     let salt = "jjh".to_string();
 
     let mut encode_result: String = String::new();
-    let mut decode_result: String = String::new();
 
     println!("Input: {}", input_string);
     println!("Salt: {}", salt);
@@ -25,7 +24,7 @@ fn main() {
 
     match decode(encode_result, offset) {
         Ok(result) => {
-            decode_result = result;
+            let decode_result = result;
             println!("Decode Result: {}", decode_result);
         }
         Err(err_msg) => println!("{}", err_msg),
